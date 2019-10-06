@@ -41,7 +41,7 @@ serynge = pygame.transform.scale(serynge, (width, height))
 guardian = pygame.image.load(os.path.join(sys.path[0], "thumb", "garde.png"))
 guardian = pygame.transform.scale(guardian, (width, height))
 
-#Liste représentant les objets à récupérer; tube, aiguille et ether. 
+#Liste représentant les objets à récupérer; tube, aiguille et ether.
 objects = ["T", "A", "E"]
 #Somme des objets récupérés initialisée à 0
 total = 0
@@ -180,12 +180,12 @@ def move(press):
             grid[mg[0]+1][mg[1]] = "M"
             grid[mg[0]][mg[1]] = "0"
             mg = [mg[0]+1,mg[1]]
-    
+
     #Lorsque la case est pratiquable et que ce n'est pas celle du gardien
     #On met "M" (McGyver) à la place du vide ("0") sur la case de destination
     #On remplace "M" par "0" sur la case d'origine (où nous nous trouvons)
     #Si elle contient un objet on incrémente la variable total
-    
+
     #On prend en compte le déplacement en affichant la modification des position
     #dans la fenêtre pygame en appelant redraw()
     redraw()
@@ -213,7 +213,7 @@ def redraw():
                 win.blit(tube, (i*width, j*height))
             if total == 3:
                 win.blit(serynge, (14*width, 0*height))
-            #La fenêtre affiche aussi en fin de partie si on a gagné ou perdu
+            #La fenêtre affiche aussi en fin de partie si on a gagné ou perdu à la moitié de l'écran
             if finish:
                 myfont = pygame.font.SysFont("monospace", 15)
                 if winning:

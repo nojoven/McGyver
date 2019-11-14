@@ -1,3 +1,36 @@
+""" -tc- Utilise une docstring pour documenter ton module, tes classes, tes méthodes, tes fonctions.
+
+Note: voir https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
+ou la PEP 257
+
+"""
+
+# -tc- Attention à ne pas tout mettre dans un même module et à plus structurer ton code. Une classe par module et n'utiliser que des classes.
+# -tc- Dans ce projet, la seule fonction sera la fonction principale, main(). Essaie de factoriser tout cela en 
+# -tc- introduisant des classes comme:
+# -tc- Logique interne:
+# -tc- ================
+# -tc-     - Labyrinth ou Maze ou Map ou Grid
+# -tc-     - MacGyver ou Hero
+# -tc-     - Item ou Element ou SyringeElement (éviter Object)
+# -tc-     - ItemCollection ou Syringe ou...
+# -tc-     - Guardian
+# -tc- Interaction utilisateur:
+# -tc- ========================
+# -tc-     - Controller
+# -tc- Logique de visualisation:
+# -tc- =========================
+# -tc-     - Game
+# -tc-     - LabyrinthView
+# -tc-     - MacGyverSprite ou HeroSprite (hérite de pygame.sprite.Sprite)
+# -tc-     - ItemSprite ou ElementSprite ou SyringeElementSprite ou...  (hérite de pygame.sprite.Sprite)
+# -tc-     - GuardianSprite (hérite de pygame.sprite.Sprite)
+
+# -tc- Attention également au fait que trop de commentaires tue le commentaire. Essayer d'écrire du code auto-documenté
+# -tc- qui choisit les bons noms de packages, de modules, de classes, de méthodes et de variables. Utiliser
+# -tc- des méthodes courtes (max 20 lignes) et documente tes méthodes/fonctions à l'aide de docstrings (voir plus haut)
+
+# -tc- Attention à respecter l'order des imports (voir PEP8)
 #Chargement de librairies et modules
 # os et sys
 #os.path.join pour changer le sens du "/" ou "\" en fonction de l'OS 
@@ -9,14 +42,31 @@ import pygame
 #Génération aléatoire de valeurs
 from random import randrange
 
+# -tc- Ne pas mettre de code au niveau global du module. Utiliser une fonction main() pour le point d'entrée
+# -tc- principal du programme. Ne pas avoir de fonction qui dépasse 20 lignes (en tout cas en condition
+# -tc- d'apprentissage)
+
+# -tc- Le brief demande de commencer par une version terminal. Commencer par pygame est une erreur selon moi
+
+# -tc- Ton code méthode logique interne, logique d'affichage et interaction avec l'utilisateur. Essaie de au moins
+# -tc- séparer la logique interne de la logique d'affichage. Idéalement, séparer les trois.
+
 # Démarrage de pygame
 pygame.init()
 
+# -tc- M'utilise jamais de variables globales. C'est une mauvaise pratique et tu n'as jamais besoin de le
+# -tc- faire en python. Utilise des classes et des objets.
+
+# -tc- définir les constantes dans un module de constantes serait une bonne idée
 # Largeur et longueur des cases
 width = 40
 height = 40
+
 #Récupération des images
 #Carreau de mur
+# -tc- Attention, tu n'as aucune garantie que sys.path[0] est le répertoire que tu veux.
+# -tc- Utiliser os.getcwd() qui est fait pour ça
+# -tc- N'oublie l'appel de la méthode convert() ou convert_alpha()
 wall = pygame.image.load(os.path.join(sys.path[0], "thumb", "mur.png"))
 wall = pygame.transform.scale(wall, (width, height))
 #Carreau de sol
@@ -42,6 +92,7 @@ guardian = pygame.image.load(os.path.join(sys.path[0], "thumb", "garde.png"))
 guardian = pygame.transform.scale(guardian, (width, height))
 
 #Liste représentant les objets à récupérer; tube, aiguille et ether.
+# -tc- évite les mots object et objects, object étant un mot réservé du langage
 objects = ["T", "A", "E"]
 #Somme des objets récupérés initialisée à 0
 total = 0
@@ -50,8 +101,11 @@ total = 0
 winning = False
 #La rencontre avec le gardien met fin à la partie. L'a-t-on rencontré?
 finish = False
+# -tc- La matrice n'est à mon avis pas la structure de données la plus adaptée pour représenter ton
+# -tc- labyrinthe. Elle te compliquera plus la vie qu'elle ne te la simplifiera. Utilise une classe
+# -tc- pour représenter ton labyrinthe
 #Déclaration de la variable grid qui sera notre matrice représentant les positions des éléments du jeu
-grid = None
+grid = None 
 #mg et guard définissent les positions (tuple de forme [x,y]) respectives de McGyver et du gardien sur la matrice
 #Initialisation à None 
 mg = None
@@ -59,6 +113,8 @@ guard = None
 
 #Cette fonction répartit les 3 objets à récupérer sur les cases pratiquables (pas les murs)  
 def distribute_objects():
+    # -tc- L'algorithme me semble très essai-erreur. Il y a certainement plus simple comme tirer
+    # -tc- au sort une position dans une liste de passages
     #Cette liste locale représente les 3 objets à récupérer:
     liste_objects = ["T","A","E"]
     #Tant que la liste n'est pas vide
@@ -72,6 +128,10 @@ def distribute_objects():
             #On enlève un objet de la liste et on le place en grid[a][b] (car pop returns l'objet) 
             grid[a][b] = liste_objects.pop()
 
+# -tc- parfois tu définis des fonctions, parfois tu reviens au niveau global. Découpe ton code en classes et en
+# -tc- méthodes. Chaque classe aura une et une seule responsabilité et chaque méthode sera courte (max 20 lignes ou un demi
+# -tc- écran).
+            
 #On ouvre le fichier contenant notre matrice en lecture seule (on le charge)
 #with permet de fermer immédiatement la ressource ouverte (structure.txt) une fois le traitement accompli
 with open(os.path.join(sys.path[0], "structure.txt"),"r") as f:
@@ -79,11 +139,21 @@ with open(os.path.join(sys.path[0], "structure.txt"),"r") as f:
     lines = f.readlines()
     #on établit une liste de char à partir de chaque ligne
     #grid est la matrice de lettres issues de structure.txt chaque lettre étant une case
+    # -tc- OK pour une représentation intermédaire avant analyse. Maintenant, il faut analyser le contenu de grid pour
+    # -tc- créer ton objet labyrinthe
     grid = [list(line.strip()) for line in lines]
 #On répartit chaque objets à récupérer sur une case pratiquable de manière aléatoire
 distribute_objects()
 
 #Sachant que structure.txt est un carré de 15*15 caractères
+# -tc- Evite d'utiliser des nombres magiques tels que 15. Utilise des constantes comme
+# -tc- LABYRINTH_WIDTH et LABYRINTH_HEIGHT
+# -tc- ici, la boucle for te permet de faire directement:
+# -tc- for row, line in enumerate(grid):
+# -tc-    for column, char in enumerate(line):
+# -tc-        # suite du code
+# -tc- 
+# -tc- C'est la manière pythonique de parcourir une matrice
 for column in range(15):
     for row in range(15):
         if grid[column][row] == "M":
@@ -106,6 +176,10 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 32)
 #run à True pour la boucle while du jeu qui se base sur la valeur de run
 run = True
 
+# -tc- La fonction move montre ici pourquoi ton approche matricielle te complique la vie. Elle utilise presque
+# -tc- 100 lignes de code répétitif pour quelque chose qui pourrait prendre 4 lignes. Par ailleurs, une fonction
+# -tc- ne devrait pas s'occuper d'affichage, donc pas de refresh(). Essaie de refactoriser ta fonction move en en
+# -tc- faisant une méthode d'une classe MacGyver ou Hero
 #Cette méthode gère les déplacements
 def move(press):
     #global permet d'utiliser les variables définies hors de move()
@@ -195,6 +269,7 @@ def move(press):
 def redraw():
     #Pour chaque case générée à partir de la matrice ? en fonction de carractère correspondant dans structure.txt
     #On lui assigne une image et une surface (une hauteur et une largeur)
+    # -tc- pas besoin de redessiner à chaque fois tout le labyrinthe alors que seuls les murs bougent
     for i in range(15):
         for j in range(15):
             if grid[i][j] == "0":
@@ -239,11 +314,14 @@ while run:
             if keys[pygame.K_LEFT]:
                 move("L")
 
+            # -tc- elif au lieu de if
             if keys[pygame.K_RIGHT]:
                 move("R")
 
+            # -tc- elif au lieu de if
             if keys[pygame.K_UP]:
                 move("U")
-
+            
+            # -tc- elif au lieu de if
             if keys[pygame.K_DOWN]:
                 move("D")

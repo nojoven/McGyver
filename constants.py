@@ -15,8 +15,8 @@ BOSS_PIC = "images/garde.png"
 BOSS_COORDINATES = (280, 40)
 
 """ Arrival and departure """
-EXIT_POSITION = (280, 0)
-FIGHT_POSITION = [(320, 40), (240, 40), (280, 0), (280, 80)]
+EXIT_POSITION = ()
+FIGHT_POSITION = []
 
 """ Items pictures """
 NEEDLE_PIC = "images/aiguille.png"

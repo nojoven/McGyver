@@ -1,99 +1,111 @@
 from time import sleep
 import pygame
-from pygame.locals import *
-from constants import *
+from pygame.locals import QUIT, KEYDOWN
+from constants import WINDOW_DIMENSIONS, FLOOR_IMAGE, WALL_IMAGE, LEVEL_FILE, PLAYER_PIC
+from constants import PLAYER_COORDINATES, BOSS_PIC, BOSS_COORDINATES, NEEDLE_PIC, TUBE_PIC, ETHER_PIC
+from constants import FIGHT_POSITION, EXIT_POSITION, CARCASS, VICTORY, FAILURE
 from labyrinth import Labyrinth
 from characters import Boss, Player
 from item import Items
 
-""" Start pygame """
-pygame.init()
+class Game:
 
-""" Display the window """
-square_window = pygame.display.set_mode(WINDOW_DIMENSIONS)
+    """ Start pygame """
+    pygame.init()
 
-""" Make the labyrinth"""
-level_components = Labyrinth(FLOOR_IMAGE, WALL_IMAGE, LEVEL_FILE)
-level_components.initialize_labyrinth(square_window)
+    """ Display the window """
+    square_window = pygame.display.set_mode(WINDOW_DIMENSIONS)
 
-""" Initialize MacGyver and the gatekeeper """
-mac = Player(PLAYER_PIC, PLAYER_COORDINATES)
-gatekeeper = Boss(BOSS_PIC, BOSS_COORDINATES)
+    """ Make the labyrinth"""
+    level_components = Labyrinth(FLOOR_IMAGE, WALL_IMAGE, LEVEL_FILE)
+    level_components.initialize_labyrinth(square_window)
 
-""" Initialize the three components of the serynge """
-needle = Items(NEEDLE_PIC, level_components)
-tube = Items(TUBE_PIC, level_components)
-ether = Items(ETHER_PIC, level_components)
+    """ Initialize MacGyver and the gatekeeper """
+    mac = Player(PLAYER_PIC, PLAYER_COORDINATES)
+    gatekeeper = Boss(BOSS_PIC, BOSS_COORDINATES)
 
-"""Displays Items"""
-def display_items(item):
-    square_window.blit(item.image, item.coordinates)
+    """ Initialize the three components of the serynge """
+    needle = Items(NEEDLE_PIC, level_components)
+    tube = Items(TUBE_PIC, level_components)
+    ether = Items(ETHER_PIC, level_components)
 
-"""Display Characters"""
-def display_character(character):
-    square_window.blit(character.head, character.coordinates)
+    """Displays Items"""
+    def display_items(self, item):
+        self.square_window.blit(item.image, item.coordinates)
 
-""" Loop of the game """
-while IS_RUNNING:
+    """Display Characters"""
+    def display_character(self, character):
+        self.square_window.blit(character.head, character.coordinates)
 
-    """ Displays the game """
-    level_components.display_labyrinth(square_window)
-    display_character(mac)
-    display_character(gatekeeper)
-    for item in Items.LIST_OF_ITEMS:
-        display_items(item)
-    pygame.display.flip()
+    def main(self):
+        is_running = True
+        """ Loop of the game """
+        while is_running:
 
-    """ What happens when we meet the gatekeeper """
-    if mac.coordinates in FIGHT_POSITION:
-        if mac.count == 3:
-            mac.neutralize(level_components, gatekeeper, EXIT_POSITION)
+            """ Displays the game """
+            self.level_components.display_labyrinth(self.square_window)
+            self.display_character(self.mac)
+            self.display_character(self.gatekeeper)
+            for item in Items.LIST_OF_ITEMS:
+                self.display_items(item)
+            pygame.display.flip()
+
+            """ What happens when we meet the gatekeeper """
+            if self.mac.coordinates in FIGHT_POSITION:
+                if self.mac.count == 3:
+                    self.mac.neutralize(self.level_components, self.gatekeeper, EXIT_POSITION)
+                else:
+                    self.gatekeeper.lose(self.mac, CARCASS)
+                    self.square_window.blit(self.mac.head, self.mac.coordinates)
+                    is_running = False
+
+            """ Reaching the exit position """
+            if self.mac.coordinates == EXIT_POSITION:
+                self.mac.victorious = True
+                is_running = False
+
+            """ Events detection """
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    is_running = False
+                if event.type == KEYDOWN:
+                    x, y = self.mac.move(event)
+
+                    """ Square where we can walk, or with a serynge component, or wall so we can't use it"""
+                    if (x, y) in self.level_components.void:
+                        self.level_components.void.remove((x, y))
+                        moving = True
+
+                    elif (x, y) in [item.coordinates for item in Items.LIST_OF_ITEMS]:
+                        self.mac.count += 1
+                        Items.LIST_OF_ITEMS = [
+                            item for item in Items.LIST_OF_ITEMS if item.coordinates != (
+                                x, y)]
+                        moving = True
+
+                    else:
+                        moving = False
+
+                    """ Moving """
+                    if moving:
+                        self.level_components.void.append(self.mac.coordinates)
+                        self.mac.coordinates = (x, y)
+
+        """ Outcome """
+        if self.mac.victorious:
+            path = VICTORY
         else:
-            gatekeeper.lose(mac, CARCASS)
-            square_window.blit(mac.head, mac.coordinates)
-            IS_RUNNING = False
+            path = FAILURE
 
-    """ Reaching the exit position """
-    if mac.coordinates == EXIT_POSITION:
-        mac.victorious = True
-        IS_RUNNING = False
+        """ Showing the outcome notification """
+        notification = pygame.image.load(path).convert()
+        self.square_window.blit(notification, (100, 300))
+        pygame.display.flip()
 
-    """ Events detection """
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            IS_RUNNING = False
-        if event.type == KEYDOWN:
-            x, y = mac.move(event)
+        """ Waiting 1 seconds before closing the window """
+        sleep(1)
 
-            """ Square where we can walk, or with a serynge component, or wall so we can't use it"""
-            if (x, y) in level_components.void:
-                level_components.void.remove((x, y))
-                moving = True
 
-            elif (x, y) in [item.coordinates for item in Items.LIST_OF_ITEMS]:
-                mac.count += 1
-                Items.LIST_OF_ITEMS = [item for item in Items.LIST_OF_ITEMS if item.coordinates != (x, y)]
-                moving = True
-
-            else:
-                moving = False
-
-            """ Moving """
-            if moving == True:
-                level_components.void.append(mac.coordinates)
-                mac.coordinates = (x, y)
-
-""" Outcome """
-if mac.victorious == True:
-    path = VICTORY
-else:
-    path = FAILURE
-
-""" Showing the outcome notification """
-notification = pygame.image.load(path).convert()
-square_window.blit(notification, (100, 300))
-pygame.display.flip()
-
-""" Waiting 1 seconds before closing the window """
-sleep(1)
-
+if __name__ == "__main__":
+    game = Game()
+    game.main()

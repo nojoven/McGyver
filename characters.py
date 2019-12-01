@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import *
+from pygame.locals import K_UP, K_DOWN, K_RIGHT, K_LEFT
 
 """ 
 

@@ -31,20 +31,23 @@ class Labyrinth:
                 if letter == "X":
                     image_path = self.wall
                 elif letter == "E":
-                    EXIT_POSITION = (i*40, j*40)
-                    self.void.append((i*40, j*40))
+                    EXIT_POSITION = (i * 40, j * 40)
+                    self.void.append((i * 40, j * 40))
                 elif letter == "G":
-                    BOSS_COORDINATES = (i*40, j*40)
+                    BOSS_COORDINATES = (i * 40, j * 40)
                     FIGHT_POSITION = [(BOSS_COORDINATES[0] + 40, BOSS_COORDINATES[1]),
-                                      (BOSS_COORDINATES[0] - 40, BOSS_COORDINATES[1]),
-                                      (BOSS_COORDINATES[0], BOSS_COORDINATES[1] - 40),
-                                      (BOSS_COORDINATES[0], BOSS_COORDINATES[1] + 40)
+                                      (BOSS_COORDINATES[0] -
+                                       40, BOSS_COORDINATES[1]),
+                                      (BOSS_COORDINATES[0],
+                                       BOSS_COORDINATES[1] - 40),
+                                      (BOSS_COORDINATES[0],
+                                       BOSS_COORDINATES[1] + 40)
                                       ]
-                    self.void.append((i*40, j*40))
+                    self.void.append((i * 40, j * 40))
 
                 else:
                     image_path = self.ground
-                    self.void.append((i*40, j*40))
+                    self.void.append((i * 40, j * 40))
                 square = pygame.image.load(image_path).convert()
                 screen.blit(square, (i, j))
                 i += 40

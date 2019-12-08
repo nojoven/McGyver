@@ -12,11 +12,6 @@ PLAYER_PIC = "images/mac.png"
 PLAYER_COORDINATES = (120, 360)
 
 BOSS_PIC = "images/garde.png"
-BOSS_COORDINATES = (280, 40)
-
-""" Arrival and departure """
-EXIT_POSITION = ()
-FIGHT_POSITION = []
 
 """ Items pictures """
 NEEDLE_PIC = "images/aiguille.png"
@@ -27,4 +22,3 @@ ETHER_PIC = "images/ether.png"
 VICTORY = "images/uwin.jpg"
 FAILURE = "images/uloose.jpg"
 CARCASS = "images/dead.jpg"
-

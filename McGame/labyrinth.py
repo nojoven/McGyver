@@ -1,50 +1,49 @@
 import pygame
-from constants import FIGHT_POSITION, EXIT_POSITION, PLAYER_COORDINATES, BOSS_COORDINATES
-
-"""
-
-Constructor of the Labyrinth object
-
-"""
 
 
 class Labyrinth:
 
-    def __init__(self, ground_image, wall_image_path, model_path):
+    # Arrival of the guardian, list of the squares protected by him and
+    # departure square coordinates
+    EXIT_POSITION = ()
+    FIGHT_POSITION = []
+    BOSS_COORDINATES = (280, 40)
 
+    def __init__(self, ground_image, wall_image_path, model_path):
+        """ Constructor of the Labyrinth object """
         self.ground = ground_image
         self.wall = wall_image_path
         self.source = model_path
+        self.obstacles = []
         self.void = []
 
-    """ Function that initialize the labyrinth """
-
     def initialize_labyrinth(self, screen):
-        """ Opens and read our model """
+        """ Function that initialize the labyrinth """
+        # Opens and read our model
         with open(self.source, "r") as data:
             model = data.read()
 
-        """ Loop on every line in lab.txt """
+        # Loops on every line in lab.txt
         for j, line in enumerate(model.split("\n")):
-            """ We evaluate for each letter if it is a wall or a ground. """
+            # We evaluate for each letter if it is a wall or a ground.
             for i, letter in enumerate(line):
                 if letter == "X":
                     image_path = self.wall
+                    self.obstacles.append((i, j))
                 elif letter == "E":
-                    EXIT_POSITION = (i * 40, j * 40)
-                    self.void.append((i * 40, j * 40))
-                elif letter == "G":
-                    BOSS_COORDINATES = (i * 40, j * 40)
-                    FIGHT_POSITION = [(BOSS_COORDINATES[0] + 40, BOSS_COORDINATES[1]),
-                                      (BOSS_COORDINATES[0] -
-                                       40, BOSS_COORDINATES[1]),
-                                      (BOSS_COORDINATES[0],
-                                       BOSS_COORDINATES[1] - 40),
-                                      (BOSS_COORDINATES[0],
-                                       BOSS_COORDINATES[1] + 40)
-                                      ]
-                    self.void.append((i * 40, j * 40))
+                    self.EXIT_POSITION = (i * 40, j * 40)
 
+                elif letter == "G":
+                    self.BOSS_COORDINATES = (i * 40, j * 40)
+                    self.FIGHT_POSITION = [
+                        (self.BOSS_COORDINATES[0] + 40,
+                         self.BOSS_COORDINATES[1]),
+                        (self.BOSS_COORDINATES[0] - 40,
+                         self.BOSS_COORDINATES[1]),
+                        (self.BOSS_COORDINATES[0],
+                         self.BOSS_COORDINATES[1] - 40),
+                        (self.BOSS_COORDINATES[0],
+                         self.BOSS_COORDINATES[1] + 40)]
                 else:
                     image_path = self.ground
                     self.void.append((i * 40, j * 40))
@@ -53,14 +52,13 @@ class Labyrinth:
                 i += 40
             j += 40
 
-        """ Some special places to remove """
-        self.void.remove(EXIT_POSITION)
-        self.void.remove(PLAYER_COORDINATES)
-        self.void.remove(BOSS_COORDINATES)
-
-    """ Function that displays the labyrinth """
+    def reachable(self, coords):
+        """Function that returns True if the square where we want to go is not a wall"""
+        return coords not in self.obstacles and (
+            0 <= coords[0] < 15) and (0 <= coords[1] < 15)
 
     def display_labyrinth(self, screen):
+        """ Function that displays the labyrinth """
         with open(self.source, "r") as data:
             source = data.read()
         j = 0
@@ -71,9 +69,11 @@ class Labyrinth:
                     image_path = self.wall
                 else:
                     image_path = self.ground
-                """ Load of the image """
+                # Loading of the image
                 square = pygame.image.load(image_path).convert()
-                """ Displays the image at the coordinates (i, j) with i pixels starting from the left and j pixels starting from the top """
+                # Displays the image at the coordinates (i, j)
+                # with i pixels starting from the left and j pixels starting
+                # from the top
                 screen.blit(square, (i, j))
 
                 i += 40

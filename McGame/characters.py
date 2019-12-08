@@ -1,46 +1,45 @@
 import pygame
 from pygame.locals import K_UP, K_DOWN, K_RIGHT, K_LEFT
 
-""" 
 
-Class that allows us to instanciate the chatacters 
-
-"""
 class Characters:
-    """ constructor of the character """
+    """ Class that allows us to instanciate the chatacters """
 
     def __init__(self, pictures_path, coordinates):
+        # constructor of the character
         self.head = pygame.image.load(pictures_path).convert_alpha()
         self.coordinates = coordinates
 
-""" Class of the boss """
+
 class Boss(Characters):
-    """ constructor of the boss """
+    """ Class of the boss """
+
     def __init__(self, image_path, coordinates):
-        """ We instanciate a character because a Boss is a Character """
+        """constructor of the boss"""
+        # We instanciate a character because a Boss is a Character
         Characters.__init__(self, image_path, coordinates)
 
-    """ Function to loose(MacGyver dies) if we don't have the serynge """
     def lose(self, macgyver, dead_path):
+        # Function to loose(MacGyver dies) if we don't have the serynge
         macgyver.head = pygame.image.load(dead_path).convert_alpha()
 
 
-"""
-  
- Class of the character. The player and the guardian are the characters.
-   
-"""
 class Player(Characters):
-    """ Constructor of the character """
+    """ Class of the character.
+
+    The player and the guardian are the characters.
+    """
+
     def __init__(self, image_path, coordinates):
+        """Constructor of the character"""
         Characters.__init__(self, image_path, coordinates)
-        """ number of items picked up by MacGyver """
+        # number of items picked up by MacGyver
         self.count = 0
-        """ Flag that becomes True if we win """
+        # Flag that becomes True if we win
         self.victorious = False
 
-    """ Allows the player to move from a square to another one """
     def move(self, event):
+        # Allows the player to move from a square to another one
         x, y = self.coordinates
         if event.key == K_UP:
             y -= 40
@@ -54,7 +53,11 @@ class Player(Characters):
             pass
         return x, y
 
-    """ Getting rid of the boss """
     def neutralize(self, labyrinth, the_boss, arrival_coordinates):
+        """ Getting rid of the boss
+
+        Function that allows us to move on the dangerous squares where the boss would
+        have killed us otherwise.
+        """
         labyrinth.void.append(the_boss.coordinates)
         labyrinth.void.append(arrival_coordinates)

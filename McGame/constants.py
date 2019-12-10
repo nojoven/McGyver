@@ -9,7 +9,7 @@ WALL_IMAGE = "images/mur.png"
 
 """ Player """
 PLAYER_PIC = "images/mac.png"
-PLAYER_COORDINATES = (120, 360)
+
 
 BOSS_PIC = "images/garde.png"
 

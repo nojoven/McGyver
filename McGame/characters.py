@@ -53,11 +53,10 @@ class Player(Characters):
             pass
         return x, y
 
-    def neutralize(self, labyrinth, the_boss, arrival_coordinates):
+    def neutralize(self, labyrinth, the_boss):
         """ Getting rid of the boss
 
         Function that allows us to move on the dangerous squares where the boss would
         have killed us otherwise.
         """
         labyrinth.void.append(the_boss.coordinates)
-        labyrinth.void.append(arrival_coordinates)

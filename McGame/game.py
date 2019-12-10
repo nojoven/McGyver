@@ -2,7 +2,7 @@ from time import sleep
 import pygame
 from pygame.locals import QUIT, KEYDOWN
 from constants import WINDOW_DIMENSIONS, FLOOR_IMAGE, WALL_IMAGE, LEVEL_FILE, PLAYER_PIC
-from constants import PLAYER_COORDINATES, BOSS_PIC, NEEDLE_PIC, TUBE_PIC, ETHER_PIC
+from constants import BOSS_PIC, NEEDLE_PIC, TUBE_PIC, ETHER_PIC
 from constants import CARCASS, VICTORY, FAILURE
 from labyrinth import Labyrinth
 from characters import Boss, Player
@@ -27,7 +27,7 @@ class Game:
     labyrinth.initialize_labyrinth(square_window)
 
     # We initialize McGyver and the gatekeeper
-    mac = Player(PLAYER_PIC, PLAYER_COORDINATES)
+    mac = Player(PLAYER_PIC, labyrinth.PLAYER_COORDINATES)
     gatekeeper = Boss(BOSS_PIC, labyrinth.BOSS_COORDINATES)
 
     # We initialize the three components of the serynge

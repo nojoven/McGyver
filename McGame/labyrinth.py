@@ -1,13 +1,12 @@
 import pygame
 
-
 class Labyrinth:
-
     # Arrival of the guardian, list of the squares protected by him and
     # departure square coordinates
     EXIT_POSITION = ()
     FIGHT_POSITION = []
-    BOSS_COORDINATES = (280, 40)
+    BOSS_COORDINATES = ()
+    PLAYER_COORDINATES = ()
 
     def __init__(self, ground_image, wall_image_path, model_path):
         """ Constructor of the Labyrinth object """
@@ -32,6 +31,9 @@ class Labyrinth:
                     self.obstacles.append((i, j))
                 elif letter == "E":
                     self.EXIT_POSITION = (i * 40, j * 40)
+
+                elif letter == "M":
+                    self.PLAYER_COORDINATES = (i*40,j*40)
 
                 elif letter == "G":
                     self.BOSS_COORDINATES = (i * 40, j * 40)
